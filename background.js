@@ -1,13 +1,13 @@
 //初始化資料
 let wordBook = [{
-    word: "Apple",
-    description: "蘋果",
+    word: "a lot of",
+    description: "許多，(片)",
     type: "",
     group: "",
     learned: ""
 }, {
-    word: "Red",
-    description: "紅色",
+    word: "abroad",
+    description: "國外，海外，(adv)",
     type: "",
     group: "",
     learned: ""
