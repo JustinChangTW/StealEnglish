@@ -53,6 +53,11 @@ let partOfSpeech = [{
     code: "c",
     description: "可數名詞"
 }];
+
+partOfSpeech = partOfSpeech.sort((x, y) => {
+    return x.code.length < y.code.length ? 1 : -1;
+})
+
 chrome.storage.sync.get("wordBook", async({ wordBook }) => {
     sliderWords(wordBook)
 });
@@ -75,7 +80,7 @@ function sliderWords(wordBook) {
                 speakButton.click()
             }
         });
-    }, 5000)
+    }, 9000)
 }
 
 function setWordText(dom, dataList, index) {
@@ -89,7 +94,7 @@ function setWordText(dom, dataList, index) {
         setTimeout(function() { speech(dataList[index].word) }, 0)
         setTimeout(function() {
             speech(transferCode(dataList[index].description))
-        }, 2000)
+        }, 3000)
     });
     dom.appendChild(speak);
     return speak;
@@ -98,15 +103,17 @@ function setWordText(dom, dataList, index) {
 function speech(text) {
     //使用原生JS
     window.speechSynthesis.cancel(); //先停止先前的發音事件
+    let speechSynthesis = window.speechSynthesis;
     var words = new SpeechSynthesisUtterance(text);
-    let voices = window.speechSynthesis.getVoices();
+    let voices = speechSynthesis.getVoices();
     var voiceName = "Google 國語（臺灣）"; //"Microsoft Hanhan Desktop - Chinese(Taiwan)" //微軟發音
     words.voice = voices.find(x => x.name == voiceName) || void(words.lang = "zh-TW"); //使用其它來源 發音
-    window.speechSynthesis.speak(words);
+    speechSynthesis.speak(words);
 }
 
 function transferCode(text) {
     if (text) {
+        console.log(partOfSpeech)
         partOfSpeech.forEach(x => {
             var re = new RegExp(x.code, 'gi')
             text = text.replace(re, x.description);

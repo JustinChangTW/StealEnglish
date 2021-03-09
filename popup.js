@@ -8,13 +8,4 @@ play.addEventListener("click", async(event) => {
         //console.log(1, this)
         event.target.innerText = playStatus ? "Stop" : "Play";
     });
-
-    chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        function: test,
-    });
 });
-
-function test() {
-    console.log('test')
-}
