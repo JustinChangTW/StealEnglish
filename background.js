@@ -18,6 +18,8 @@ let wordBook = [{
     group: "",
     learned: ""
 }]
+let playStatus = true
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.sync.set({ wordBook });
+    chrome.storage.sync.set({ playStatus });
 });

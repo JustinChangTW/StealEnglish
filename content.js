@@ -66,10 +66,15 @@ function sliderWords(wordBook) {
     let currentIndex = 0
     setWordText(wordBookDiv, wordBook, currentIndex)
     setInterval(function() {
-        var speakButton = setWordText(wordBookDiv, wordBook, currentIndex)
-        currentIndex++
-        currentIndex = currentIndex % (wordBook.length)
-        speakButton.click()
+        chrome.storage.sync.get("playStatus", async({ playStatus }) => {
+            console.log('playStatus', playStatus);
+            if (playStatus) {
+                var speakButton = setWordText(wordBookDiv, wordBook, currentIndex)
+                currentIndex++
+                currentIndex = currentIndex % (wordBook.length)
+                speakButton.click()
+            }
+        });
     }, 5000)
 }
 
@@ -101,9 +106,11 @@ function speech(text) {
 }
 
 function transferCode(text) {
-    partOfSpeech.forEach(x => {
-        var re = new RegExp(x.code, 'gi')
-        text = text.replace(re, x.description);
-    })
+    if (text) {
+        partOfSpeech.forEach(x => {
+            var re = new RegExp(x.code, 'gi')
+            text = text.replace(re, x.description);
+        })
+    }
     return text;
 }
