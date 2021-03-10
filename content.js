@@ -58,7 +58,8 @@ partOfSpeech = partOfSpeech.sort((x, y) => {
     return x.code.length < y.code.length ? 1 : -1;
 })
 
-chrome.storage.sync.get("wordBook", async({ wordBook }) => {
+chrome.storage.local.get("wordBook", async({ wordBook }) => {
+    console.log(wordBook)
     sliderWords(wordBook)
 });
 
@@ -71,7 +72,7 @@ function sliderWords(wordBook) {
     let currentIndex = 0
     setWordText(wordBookDiv, wordBook, currentIndex)
     setInterval(function() {
-        chrome.storage.sync.get("playStatus", async({ playStatus }) => {
+        chrome.storage.local.get("playStatus", async({ playStatus }) => {
             console.log('playStatus', playStatus);
             if (playStatus) {
                 var speakButton = setWordText(wordBookDiv, wordBook, currentIndex)
@@ -113,7 +114,6 @@ function speech(text) {
 
 function transferCode(text) {
     if (text) {
-        console.log(partOfSpeech)
         partOfSpeech.forEach(x => {
             var re = new RegExp(x.code, 'gi')
             text = text.replace(re, x.description);

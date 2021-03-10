@@ -20,6 +20,6 @@ let wordBook = [{
 }]
 let playStatus = true
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.storage.sync.set({ wordBook });
-    chrome.storage.sync.set({ playStatus });
+    chrome.storage.local.set({ wordBook });
+    chrome.storage.local.set({ playStatus });
 });

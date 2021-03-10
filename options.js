@@ -1,47 +1,90 @@
-let page = document.getElementById("buttonDiv");
-let selectedClassName = "current";
-const presetButtonColors = ["#3aa757", "#e8453c", "#f9bb2d", "#4688f1"];
+var data = {}
+var wordBook = {}
+var inputButton = document.querySelector("#excelFile")
 
-// Reacts to a button click by marking marking the selected button and saving
-// the selection
-function handleButtonClick(event) {
-  // Remove styling from the previously selected color
-  let current = event.target.parentElement.querySelector(
-    `.${selectedClassName}`
-  );
-  if (current && current !== event.target) {
-    current.classList.remove(selectedClassName);
-  }
+inputButton.addEventListener('change', uploadFile);
 
-  // Mark the button as selected
-  let color = event.target.dataset.color;
-  event.target.classList.add(selectedClassName);
-  chrome.storage.sync.set({ color });
+window.onload = function() {
+    chrome.storage.local.get('wordBook', (x) => {
+        data.words = x.wordBook
+        wordBook = x.wordBook
+        chrome.storage.local.get('title', ({ title }) => {
+            buildTable(document.querySelector('#table'), title)
+        });
+
+    })
 }
 
-// Add a button to the page for each supplied color
-function constructOptions(buttonColors) {
-  chrome.storage.sync.get("color", (data) => {
-    let currentColor = data.color;
+function uploadFile(event) {
+    let reader = new FileReader();
+    //在FileReader load 被觸發時
+    reader.addEventListener('load', () => {
+        //1.將檔案轉為xlsx物件(使用binary格式)
+        var workbook = XLSX.read(reader.result, {
+            type: 'array'
+        });
 
-    // For each color we were provided…
-    for (let buttonColor of buttonColors) {
-      // …crate a button with that color…
-      let button = document.createElement("button");
-      button.dataset.color = buttonColor;
-      button.style.backgroundColor = buttonColor;
+        //2. 選擇要匯入的Sheet
+        var sheetNames = workbook.SheetNames;
+        var choiceName = prompt(`工作簿有： ${sheetNames.toString()}，請輸入工作簿名稱 :`, sheetNames[0])
+            //console.log(`choice SheetName ${choiceName}`)
 
-      // …mark the currently selected color…
-      if (buttonColor === currentColor) {
-        button.classList.add(selectedClassName);
-      }
+        //3. 將一個工作簿轉成JSON
+        let results = XLSX.utils.sheet_to_json(workbook.Sheets[choiceName], {
+            // header: 1,
+            defval: '' //設定預設值//當欄位沒有設置時key也不會消失
 
-      // …and register a listener for when that button is clicked
-      button.addEventListener("click", handleButtonClick);
-      page.appendChild(button);
-    }
-  });
+        });
+        //console.log(results)
+
+        //4. 將取得的Json存入data
+        data.words = results;
+        wordBook = data.words;
+        chrome.storage.local.set({ wordBook });
+
+        var title = Object.keys(data.words[0]);
+        chrome.storage.local.set({ title });
+
+        buildTable(document.querySelector('#table'), title)
+    });
+
+    reader.readAsArrayBuffer(event.target.files[0]);
 }
 
-// Initialize the page by constructing the color options
-constructOptions(presetButtonColors);
+function buildTable(dom, title) {
+    var table = document.createElement('table');
+    var thead = document.createElement('thead');
+    var tbody = document.createElement('tbody');
+    table.appendChild(thead);
+    table.appendChild(tbody);
+
+    //表單標題
+    var theadTr = document.createElement('tr');
+    var th = document.createElement('th');
+    th.innerText = "";
+    theadTr.appendChild(th);
+    title.forEach(x => {
+        var th = document.createElement('th');
+        th.innerText = x;
+        theadTr.appendChild(th);
+    });
+    thead.appendChild(theadTr);
+
+    //表單內容
+    data.words.forEach((row, index) => {
+        var tr = document.createElement('tr');
+
+        var td = document.createElement('td')
+        td.innerText = index + 1
+        tr.appendChild(td)
+        title.forEach(col => {
+            var td = document.createElement('td');
+            td.innerText = row[col];
+            tr.appendChild(td);
+        })
+        tbody.appendChild(tr);
+    });
+    dom.innerHTML = "";
+    dom.appendChild(table);
+
+}

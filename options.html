@@ -1,14 +1,44 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" href="button.css">
-  </head>
-  <body>
-    <div id="buttonDiv">
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        base-uri 'unsafe-inline' 'unsafe-eval';
+        connect-src * 'unsafe-inline' 'unsafe-eval';
+        default-src * 'unsafe-inline' 'unsafe-eval' data: gap: https://ssl.gstatic.com;
+        font-src * data:;
+        form-action;
+        img-src * data:;
+        manifest-src * 'unsafe-inline' 'unsafe-eval';
+        media-src * 'unsafe-inline' 'unsafe-eval';
+        object-src * 'self' 'unsafe-inline' 'unsafe-eval';
+        report-to;
+        script-src * 'unsafe-inline' 'unsafe-eval';
+        script-src-attr * 'unsafe-inline' 'unsafe-eval';
+        script-src-elem * 'unsafe-inline' 'unsafe-eval';
+        style-src * data: 'unsafe-inline';
+        style-src-attr * data: 'unsafe-inline';
+        style-src-elem * data: 'unsafe-inline';
+    ">
+
+    <script src="js/xlsx.full.min.js "></script>
+    <link rel="stylesheet" href="./options.css">
+    <title>偷偷背單字
+    </title>
+</head>
+
+<body>
+    <div id="app">
+
+        <div><label for="excelFile ">ExcelFile :</label><input id="excelFile" type="file"></div>
+
+        <div id="table"></div>
+
     </div>
-    <div>
-      <p>Choose a different background color!</p>
-    </div>
-  </body>
-  <script src="options.js"></script>
+    <script src="./options.js "></script>
+</body>
+
 </html>
