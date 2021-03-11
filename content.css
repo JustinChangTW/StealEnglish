@@ -28,9 +28,13 @@
     right: 0;
 }
 
-#speak {
+#speak,
+#play {
     width: 20px;
     height: 20px;
     background-size: cover;
     background-repeat: no-repeat;
+    border: 0;
+    margin-right: 3px;
+    margin-left: 3px;
 }

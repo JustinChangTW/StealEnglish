@@ -54,6 +54,9 @@ let partOfSpeech = [{
     description: "可數名詞"
 }];
 
+var isPlay = true;
+var keepPlayStatus
+
 partOfSpeech = partOfSpeech.sort((x, y) => {
     return x.code.length < y.code.length ? 1 : -1;
 })
@@ -67,18 +70,25 @@ chrome.storage.local.get("wordBook", async({ wordBook }) => {
 function sliderWords(wordBook) {
     var wordBookDiv = document.createElement('div')
     wordBookDiv.id = "word"
-
     document.body.appendChild(wordBookDiv)
     let currentIndex = 0
     setWordText(wordBookDiv, wordBook, currentIndex)
     setInterval(function() {
         chrome.storage.local.get("playStatus", async({ playStatus }) => {
-            console.log('playStatus', playStatus);
-            if (playStatus) {
+            if (keepPlayStatus == undefined || keepPlayStatus != playStatus) {
+                keepPlayStatus = playStatus;
+                isPlay = playStatus;
+            }
+
+            if (isPlay) {
                 var speakButton = setWordText(wordBookDiv, wordBook, currentIndex)
                 currentIndex++
                 currentIndex = currentIndex % (wordBook.length)
                 speakButton.click()
+            } else if (!keepPlayStatus) {
+                var playButton = document.querySelector("#play")
+                var stopImageUrl = chrome.runtime.getURL("images/stop.png");
+                playButton.style.backgroundImage = `url(${stopImageUrl})`;
             }
         });
     }, 9000)
@@ -97,7 +107,22 @@ function setWordText(dom, dataList, index) {
             speech(transferCode(dataList[index].description))
         }, 3000)
     });
-    dom.appendChild(speak);
+
+    var playButton = document.createElement('button');
+    playButton.id = "play";
+    var playImageUrl = chrome.runtime.getURL("images/play.png");
+    var pauseImageUrl = chrome.runtime.getURL("images/pause.png");
+    playButton.style.backgroundImage = `url(${playImageUrl})`;
+    playButton.addEventListener('click', function(event) {
+        isPlay = !isPlay;
+        var currentImage = isPlay ? `url(${playImageUrl})` : `url(${pauseImageUrl})`;
+        event.target.style.backgroundImage = currentImage;
+
+    })
+
+    dom.appendChild(speak)
+    dom.insertBefore(playButton, dom.childNodes[0]);
+
     return speak;
 }
 
