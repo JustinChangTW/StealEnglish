@@ -49,6 +49,8 @@ function uploadFile(event) {
     });
 
     reader.readAsArrayBuffer(event.target.files[0]);
+
+    event.target.value = '' //匯入完成後將target清空，使得同一檔案可以一直上傳
 }
 
 function buildTable(dom, title) {
